@@ -72,24 +72,35 @@
         .menu-item:hover { background: rgba(255,0,0,0.1); transform: translateX(5px); border-left: 3px solid var(--primary); }
         .menu-item.exit { color: #ff4444; margin-top: auto; border: 1px solid rgba(255,0,0,0.3); }
 
-        /* Search & User List */
+        /* Search Area */
         .search-container { padding: 20px; background: rgba(0,0,0,0.5); display: flex; flex-direction: column; flex: 1; overflow-y: auto; }
         .search-box { display: flex; gap: 10px; }
-
         #search-result { margin-top: 15px; }
         
-        /* NEW: Recent Chats Section Header */
-        .recent-header { font-family: 'Orbitron'; font-size: 12px; color: var(--primary); margin-top: 25px; margin-bottom: 10px; letter-spacing: 1px; font-weight: bold; }
+        /* NEW: WhatsApp Style Recent Chats Area */
+        .recent-header { font-family: 'Orbitron'; font-size: 14px; color: var(--primary); margin-top: 25px; margin-bottom: 15px; letter-spacing: 1px; font-weight: bold; border-bottom: 1px solid rgba(255,0,0,0.3); padding-bottom: 8px; }
         #recent-chats-list { display: flex; flex-direction: column; gap: 10px; }
 
+        .rc-card { display: flex; align-items: center; padding: 15px; background: rgba(0,0,0,0.6); border: 1px solid rgba(255,0,0,0.2); border-radius: 12px; cursor: pointer; transition: 0.3s; gap: 15px; }
+        .rc-card:hover { background: rgba(255,0,0,0.1); box-shadow: var(--glow); border-color: var(--primary); transform: translateY(-2px); }
+        .rc-dp { width: 50px; height: 50px; border-radius: 50%; border: 2px solid var(--primary); object-fit: cover; }
+        
+        .rc-content { flex: 1; min-width: 0; display: flex; flex-direction: column; justify-content: center; }
+        .rc-top { display: flex; justify-content: space-between; align-items: center; margin-bottom: 5px; }
+        .rc-name { font-family: 'Orbitron'; font-weight: bold; color: white; font-size: 16px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        .rc-time { font-size: 11px; color: #777; font-family: 'Poppins'; white-space: nowrap; margin-left: 10px; }
+        
+        .rc-bottom { display: flex; justify-content: space-between; align-items: center; }
+        .rc-msg { font-size: 13px; color: #aaa; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; padding-right: 10px; }
+        .rc-msg.unread { color: white; font-weight: 600; }
+        .rc-badge { background: var(--primary); color: white; font-size: 11px; font-weight: bold; min-width: 22px; height: 22px; border-radius: 12px; display: flex; justify-content: center; align-items: center; padding: 0 6px; box-shadow: var(--glow); font-family: 'Poppins'; }
+
+        /* Search User Card */
         .user-card { display: flex; align-items: center; justify-content: space-between; padding: 15px; background: rgba(255,0,0,0.05); border: 1px solid rgba(255,0,0,0.2); border-radius: 12px; cursor: pointer; transition: 0.3s; }
         .user-card:hover { background: rgba(255,0,0,0.15); box-shadow: var(--glow); transform: translateY(-2px); }
         .user-card-info { display: flex; align-items: center; gap: 15px; }
         .user-card-dp { width: 45px; height: 45px; border-radius: 50%; border: 2px solid var(--primary); object-fit: cover; }
         .user-card-name { font-family: 'Orbitron'; font-weight: bold; color: white; }
-
-        /* NEW: Unread Notification Badge */
-        .unread-badge { background: var(--primary); color: white; font-size: 12px; font-weight: bold; width: 24px; height: 24px; border-radius: 50%; display: flex; justify-content: center; align-items: center; box-shadow: var(--glow); font-family: 'Poppins'; }
 
         /* Chat Window */
         #chat-window { position: fixed; inset: 0; background: url('https://www.transparenttextures.com/patterns/carbon-fibre.png'), #050505; z-index: 1000; display: none; flex-direction: column; }
@@ -155,14 +166,14 @@
         </div>
 
         <div class="search-container">
+            <!-- Search Bar -->
             <div class="search-box">
                 <input type="text" id="search-id" placeholder="Search Chat ID (MH-0000)" style="margin:0; text-align: left;">
                 <button class="btn-prime" style="width: 60px; border-radius: 12px;" onclick="searchUser()"><i class="fa-solid fa-magnifying-glass"></i></button>
             </div>
-            <!-- Search Result Area -->
             <div id="search-result"></div>
 
-            <!-- NEW: Recent Chats Area (Added Below Search Result) -->
+            <!-- RECENT CHATS: WhatsApp Style (Permanent History) -->
             <div class="recent-header" id="recent-header" style="display: none;">RECENT CHATS</div>
             <div id="recent-chats-list"></div>
         </div>
@@ -265,7 +276,7 @@
         let currentUser = null;
         let activeChatId = null;
         let uploadedDPBase64 = "";
-        const userCache = {}; // Added to make chat list load faster without lag
+        const userCache = {}; // Fast cache load
 
         // Splash Animation Logic
         window.onload = () => {
@@ -338,7 +349,7 @@
                 document.getElementById('login-screen').style.display = 'none';
                 document.getElementById('dashboard').style.display = 'flex';
                 
-                // NEW: Load All Recent Chats after login
+                // Initialize WhatsApp-like Recent Chats System
                 loadRecentChats();
 
             } else {
@@ -438,7 +449,7 @@
             }
         };
 
-        // NEW FEATURE: Load Recent Chats & Notifications
+        // WHATSAPP STYLE RECENT CHAT SYSTEM
         async function getUserDetails(id) {
             if(userCache[id]) return userCache[id];
             const snap = await get(child(ref(db), 'users/' + id));
@@ -468,33 +479,40 @@
                     chatsArray.push({ id: child.key, ...child.val() });
                 });
 
-                // Sort by latest message time
-                chatsArray.sort((a, b) => b.time - a.time);
+                // Top pe latest message wali chat aayegi (Sort by time)
+                chatsArray.sort((a, b) => (b.time || 0) - (a.time || 0));
 
                 for(let chat of chatsArray) {
                     const uData = await getUserDetails(chat.id);
                     const targetName = uData.name || chat.id;
                     const targetDp = uData.dp || `https://ui-avatars.com/api/?name=${chat.id}&background=111&color=fff`;
                     
-                    // Show unread notification badge if unread > 0
-                    let badgeHtml = chat.unread > 0 ? `<div class="unread-badge">${chat.unread}</div>` : "";
+                    // Time Formatting (Whatsapp Style: 10:30 PM)
+                    let timeStr = "";
+                    if(chat.time) {
+                        const date = new Date(chat.time);
+                        timeStr = date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+                    }
+
+                    // Notification Badge Logic
+                    let isUnread = chat.unread > 0;
+                    let badgeHtml = isUnread ? `<div class="rc-badge">${chat.unread}</div>` : ``;
+                    let msgClass = isUnread ? "rc-msg unread" : "rc-msg";
                     
-                    // Shorten last message string
                     let shortMsg = chat.lastMsg ? chat.lastMsg : "Tap to chat";
-                    if(shortMsg.length > 25) shortMsg = shortMsg.substring(0, 25) + "...";
 
                     listElem.innerHTML += `
-                        <div class="user-card" onclick="startChat('${chat.id}', '${targetName}', '${targetDp}')">
-                            <div class="user-card-info">
-                                <img src="${targetDp}" class="user-card-dp">
-                                <div>
-                                    <div class="user-card-name">${targetName}</div>
-                                    <div style="font-size: 12px; color: ${chat.unread > 0 ? 'white' : '#aaa'}; font-weight: ${chat.unread > 0 ? 'bold' : 'normal'};">${shortMsg}</div>
+                        <div class="rc-card" onclick="startChat('${chat.id}', '${targetName}', '${targetDp}')">
+                            <img src="${targetDp}" class="rc-dp">
+                            <div class="rc-content">
+                                <div class="rc-top">
+                                    <div class="rc-name">${targetName}</div>
+                                    <div class="rc-time">${timeStr}</div>
                                 </div>
-                            </div>
-                            <div style="display:flex; align-items:center; gap:12px;">
-                                ${badgeHtml}
-                                <i class="fa-solid fa-comment" style="color:var(--primary); font-size:20px;"></i>
+                                <div class="rc-bottom">
+                                    <div class="${msgClass}">${shortMsg}</div>
+                                    ${badgeHtml}
+                                </div>
                             </div>
                         </div>
                     `;
@@ -511,7 +529,7 @@
             document.getElementById('target-name').innerText = targetName;
             document.getElementById('chat-header-dp').src = targetDp;
 
-            // NEW: Mark messages as Read (Clear Unread Notification)
+            // Chat open karte hi Notification Badge read (0) ho jayega
             update(ref(db, `recent_chats/${currentUser.chatID}/${id}`), {
                 unread: 0
             });
@@ -541,7 +559,7 @@
                 });
                 msgArea.scrollTop = msgArea.scrollHeight;
                 
-                // Keep Unread count 0 while chat window is active
+                // Active chat window ho to unread badge reset rakhna
                 if(activeChatId === targetID) {
                     update(ref(db, `recent_chats/${currentUser.chatID}/${targetID}`), {
                         unread: 0
@@ -558,21 +576,21 @@
             const chatKey = [currentUser.chatID, activeChatId].sort().join("_");
             const timestamp = Date.now();
 
-            // Main Chat Database Push (No code removed)
+            // Main Message Push (Aapka Purana Logic Same Ha)
             push(ref(db, 'chats/' + chatKey), {
                 sender: currentUser.chatID,
                 text: text,
                 time: timestamp
             });
 
-            // NEW: Update Recent Chats list for Sender (You)
+            // Updating "My Recent Chats" List (Sent message)
             update(ref(db, `recent_chats/${currentUser.chatID}/${activeChatId}`), {
                 lastMsg: text,
                 time: timestamp,
                 unread: 0
             });
 
-            // NEW: Update Recent Chats & Unread count for Receiver (Target)
+            // Updating "Receiver's Recent Chats" List (Adding Notification Count)
             const receiverRecentRef = ref(db, `recent_chats/${activeChatId}/${currentUser.chatID}`);
             get(receiverRecentRef).then(snap => {
                 let currentUnread = 0;
@@ -582,7 +600,7 @@
                 update(receiverRecentRef, {
                     lastMsg: text,
                     time: timestamp,
-                    unread: currentUnread + 1 // Increase unread notification
+                    unread: currentUnread + 1 // Plus Unread Badge Count
                 });
             });
 
