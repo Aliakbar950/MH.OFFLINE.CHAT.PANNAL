@@ -76,20 +76,20 @@
         .search-container { padding: 20px; background: rgba(0,0,0,0.5); display: flex; flex-direction: column; flex: 1; overflow-y: auto; }
         .search-box { display: flex; gap: 10px; }
         #search-result { margin-top: 15px; }
-        
-        /* NEW: WhatsApp Style Recent Chats Area */
+
+        /* WhatsApp Style Recent Chats Area */
         .recent-header { font-family: 'Orbitron'; font-size: 14px; color: var(--primary); margin-top: 25px; margin-bottom: 15px; letter-spacing: 1px; font-weight: bold; border-bottom: 1px solid rgba(255,0,0,0.3); padding-bottom: 8px; }
         #recent-chats-list { display: flex; flex-direction: column; gap: 10px; }
 
         .rc-card { display: flex; align-items: center; padding: 15px; background: rgba(0,0,0,0.6); border: 1px solid rgba(255,0,0,0.2); border-radius: 12px; cursor: pointer; transition: 0.3s; gap: 15px; }
         .rc-card:hover { background: rgba(255,0,0,0.1); box-shadow: var(--glow); border-color: var(--primary); transform: translateY(-2px); }
         .rc-dp { width: 50px; height: 50px; border-radius: 50%; border: 2px solid var(--primary); object-fit: cover; }
-        
+
         .rc-content { flex: 1; min-width: 0; display: flex; flex-direction: column; justify-content: center; }
         .rc-top { display: flex; justify-content: space-between; align-items: center; margin-bottom: 5px; }
         .rc-name { font-family: 'Orbitron'; font-weight: bold; color: white; font-size: 16px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
         .rc-time { font-size: 11px; color: #777; font-family: 'Poppins'; white-space: nowrap; margin-left: 10px; }
-        
+
         .rc-bottom { display: flex; justify-content: space-between; align-items: center; }
         .rc-msg { font-size: 13px; color: #aaa; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; padding-right: 10px; }
         .rc-msg.unread { color: white; font-weight: 600; }
@@ -276,6 +276,7 @@
         let currentUser = null;
         let activeChatId = null;
         let uploadedDPBase64 = "";
+        let currentChatListener = null; // Memory leak fix
         const userCache = {}; // Fast cache load
 
         // Splash Animation Logic
@@ -348,7 +349,7 @@
 
                 document.getElementById('login-screen').style.display = 'none';
                 document.getElementById('dashboard').style.display = 'flex';
-                
+
                 // Initialize WhatsApp-like Recent Chats System
                 loadRecentChats();
 
@@ -377,9 +378,9 @@
         };
 
         window.openProfile = () => {
-            toggleSidebar(); 
+            toggleSidebar();
             document.getElementById('profile-modal').style.display = 'flex';
-            document.getElementById('prof-id').value = currentUser.chatID; 
+            document.getElementById('prof-id').value = currentUser.chatID;
             document.getElementById('prof-name').value = currentUser.name || "";
             document.getElementById('prof-email').value = currentUser.email || "";
             document.getElementById('profile-dp-preview').src = currentUser.dp;
@@ -449,7 +450,7 @@
             }
         };
 
-        // WHATSAPP STYLE RECENT CHAT SYSTEM
+        // WHATSAPP STYLE RECENT CHAT SYSTEM (BUG FIXED)
         async function getUserDetails(id) {
             if(userCache[id]) return userCache[id];
             const snap = await get(child(ref(db), 'users/' + id));
@@ -465,43 +466,44 @@
             onValue(recentRef, async (snapshot) => {
                 const listElem = document.getElementById('recent-chats-list');
                 const headerElem = document.getElementById('recent-header');
-                listElem.innerHTML = "";
 
                 if(!snapshot.exists()) {
                     headerElem.style.display = "none";
+                    listElem.innerHTML = "";
                     return;
                 }
-                
+
                 headerElem.style.display = "block";
-                
+
                 let chatsArray = [];
                 snapshot.forEach(child => {
                     chatsArray.push({ id: child.key, ...child.val() });
                 });
 
-                // Top pe latest message wali chat aayegi (Sort by time)
+                // Top pe latest message wali chat aayegi (Sort by time descending)
                 chatsArray.sort((a, b) => (b.time || 0) - (a.time || 0));
+
+                let finalHTML = ""; // To prevent async DOM breaking issues
 
                 for(let chat of chatsArray) {
                     const uData = await getUserDetails(chat.id);
                     const targetName = uData.name || chat.id;
                     const targetDp = uData.dp || `https://ui-avatars.com/api/?name=${chat.id}&background=111&color=fff`;
-                    
-                    // Time Formatting (Whatsapp Style: 10:30 PM)
+
+                    // Time Formatting
                     let timeStr = "";
                     if(chat.time) {
                         const date = new Date(chat.time);
                         timeStr = date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
                     }
 
-                    // Notification Badge Logic
-                    let isUnread = chat.unread > 0;
+                    // Notification Badge Logic Fixed
+                    let isUnread = (chat.unread && chat.unread > 0);
                     let badgeHtml = isUnread ? `<div class="rc-badge">${chat.unread}</div>` : ``;
                     let msgClass = isUnread ? "rc-msg unread" : "rc-msg";
-                    
                     let shortMsg = chat.lastMsg ? chat.lastMsg : "Tap to chat";
 
-                    listElem.innerHTML += `
+                    finalHTML += `
                         <div class="rc-card" onclick="startChat('${chat.id}', '${targetName}', '${targetDp}')">
                             <img src="${targetDp}" class="rc-dp">
                             <div class="rc-content">
@@ -517,6 +519,9 @@
                         </div>
                     `;
                 }
+                
+                // One-time Update to DOM (Race Condition Fixed)
+                listElem.innerHTML = finalHTML;
             });
         }
 
@@ -529,7 +534,7 @@
             document.getElementById('target-name').innerText = targetName;
             document.getElementById('chat-header-dp').src = targetDp;
 
-            // Chat open karte hi Notification Badge read (0) ho jayega
+            // Chat open karte hi Notification Badge INSTANTLY read (0) ho jayega
             update(ref(db, `recent_chats/${currentUser.chatID}/${id}`), {
                 unread: 0
             });
@@ -543,11 +548,24 @@
             document.getElementById('search-result').innerHTML = "";
             document.getElementById('search-id').value = "";
             activeChatId = null;
+            
+            // Stop background listener to save memory and stop glitches
+            if(currentChatListener) {
+                currentChatListener(); 
+                currentChatListener = null;
+            }
         };
 
         function listenMessages(targetID) {
             const chatKey = [currentUser.chatID, targetID].sort().join("_");
-            onValue(ref(db, 'chats/' + chatKey), (snapshot) => {
+            const chatsRef = ref(db, 'chats/' + chatKey);
+
+            // Detach previous listeners if any (Important Fix)
+            if(currentChatListener) {
+                currentChatListener();
+            }
+
+            currentChatListener = onValue(chatsRef, (snapshot) => {
                 const msgArea = document.getElementById('chat-msgs');
                 msgArea.innerHTML = "";
                 snapshot.forEach(child => {
@@ -558,8 +576,8 @@
                     msgArea.appendChild(div);
                 });
                 msgArea.scrollTop = msgArea.scrollHeight;
-                
-                // Active chat window ho to unread badge reset rakhna
+
+                // Agar app is chat me hain, aur new message aaya, to automatically read (0)
                 if(activeChatId === targetID) {
                     update(ref(db, `recent_chats/${currentUser.chatID}/${targetID}`), {
                         unread: 0
@@ -568,7 +586,7 @@
             });
         }
 
-        window.sendMessage = () => {
+        window.sendMessage = async () => {
             const inputField = document.getElementById('m-input');
             const text = inputField.value.trim();
             if(!text) return;
@@ -576,15 +594,17 @@
             const chatKey = [currentUser.chatID, activeChatId].sort().join("_");
             const timestamp = Date.now();
 
-            // Main Message Push (Aapka Purana Logic Same Ha)
-            push(ref(db, 'chats/' + chatKey), {
+            inputField.value = ""; // Instantly clear input for faster UI feel
+
+            // Main Message Push
+            await push(ref(db, 'chats/' + chatKey), {
                 sender: currentUser.chatID,
                 text: text,
                 time: timestamp
             });
 
             // Updating "My Recent Chats" List (Sent message)
-            update(ref(db, `recent_chats/${currentUser.chatID}/${activeChatId}`), {
+            await update(ref(db, `recent_chats/${currentUser.chatID}/${activeChatId}`), {
                 lastMsg: text,
                 time: timestamp,
                 unread: 0
@@ -592,19 +612,18 @@
 
             // Updating "Receiver's Recent Chats" List (Adding Notification Count)
             const receiverRecentRef = ref(db, `recent_chats/${activeChatId}/${currentUser.chatID}`);
-            get(receiverRecentRef).then(snap => {
-                let currentUnread = 0;
-                if(snap.exists() && snap.val().unread) {
-                    currentUnread = snap.val().unread;
-                }
-                update(receiverRecentRef, {
-                    lastMsg: text,
-                    time: timestamp,
-                    unread: currentUnread + 1 // Plus Unread Badge Count
-                });
+            const snap = await get(receiverRecentRef);
+            
+            let currentUnread = 0;
+            if(snap.exists() && snap.val().unread) {
+                currentUnread = snap.val().unread;
+            }
+            
+            await update(receiverRecentRef, {
+                lastMsg: text,
+                time: timestamp,
+                unread: currentUnread + 1 // Plus Unread Badge Count
             });
-
-            inputField.value = "";
         };
 
         document.getElementById('m-input').addEventListener("keypress", function(event) {
