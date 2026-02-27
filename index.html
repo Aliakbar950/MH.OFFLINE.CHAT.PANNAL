@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>MH OFFLINE CHAT - PREMIUM ACCESS</title>
+    <title>MH CHAT - ADMIN PANEL</title>
     <!-- Fonts -->
     <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
     <!-- Icons (FontAwesome) -->
@@ -23,7 +23,6 @@
         * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Poppins', sans-serif; }
         body { background: var(--bg); color: var(--text); overflow: hidden; height: 100vh; }
 
-        /* Custom Scrollbar */
         ::-webkit-scrollbar { width: 6px; }
         ::-webkit-scrollbar-track { background: #000; }
         ::-webkit-scrollbar-thumb { background: var(--primary); border-radius: 10px; }
@@ -32,7 +31,6 @@
         #splash { position: fixed; inset: 0; background: radial-gradient(circle, #1a0000 0%, #000 100%); z-index: 9999; display: flex; flex-direction: column; justify-content: center; align-items: center; }
         .spin-logo { width: 120px; height: 120px; border-radius: 50%; object-fit: cover; animation: spinLogo 3s linear infinite; filter: drop-shadow(0 0 15px red); }
         @keyframes spinLogo { to { transform: rotate(360deg); } }
-
         .loading-counter { font-family: 'Orbitron'; font-size: 35px; color: var(--primary); font-weight: 900; margin-top: 20px; text-shadow: var(--glow); }
         .splash-text { font-family: 'Orbitron'; font-size: 20px; color: white; margin-top: 10px; letter-spacing: 3px; animation: pulseText 1.5s infinite alternate; }
         @keyframes pulseText { from { opacity: 0.7; transform: scale(0.95); } to { opacity: 1; transform: scale(1.05); } }
@@ -42,102 +40,52 @@
         .auth-card { background: var(--card); backdrop-filter: blur(10px); padding: 50px 40px; border-radius: 20px; width: 90%; max-width: 420px; border: 1px solid rgba(255,0,0,0.3); text-align: center; box-shadow: var(--box-shadow); transition: transform 0.3s; }
         .auth-card:hover { transform: translateY(-5px); border-color: var(--primary); }
         .auth-title { font-family: 'Orbitron'; color: var(--primary); margin-bottom: 30px; letter-spacing: 2px; text-shadow: var(--glow); font-size: 22px; font-weight: 700; }
-
+        
         input { width: 100%; padding: 15px; margin-bottom: 20px; background: rgba(0,0,0,0.6); border: 1px solid #333; color: white; border-radius: 12px; outline: none; text-align: center; font-family: 'Orbitron'; transition: 0.3s; font-size: 15px; }
         input:focus { border-color: var(--primary); box-shadow: var(--glow); }
-
+        
         .btn-prime { width: 100%; padding: 15px; background: linear-gradient(45deg, var(--primary-dark), var(--primary)); color: white; border: none; border-radius: 12px; font-weight: bold; cursor: pointer; font-family: 'Orbitron'; font-size: 16px; letter-spacing: 1px; transition: 0.3s; box-shadow: 0 4px 15px rgba(255,0,0,0.4); }
         .btn-prime:hover { transform: scale(1.05); box-shadow: var(--glow); }
 
-        /* Dashboard */
-        #dashboard { display: none; height: 100vh; flex-direction: column; background: url('https://www.transparenttextures.com/patterns/carbon-fibre.png'), linear-gradient(to bottom, #0a0a0a, #000); }
-
+        /* Admin Dashboard */
+        #admin-dashboard { display: none; height: 100vh; flex-direction: column; background: url('https://www.transparenttextures.com/patterns/carbon-fibre.png'), linear-gradient(to bottom, #0a0a0a, #000); }
         .top-bar { height: 70px; background: rgba(0, 0, 0, 0.8); backdrop-filter: blur(10px); display: flex; align-items: center; justify-content: space-between; padding: 0 20px; border-bottom: 1px solid rgba(255,0,0,0.3); box-shadow: 0 2px 10px rgba(255,0,0,0.2); }
-        .logo-title { font-family: 'Orbitron'; color: var(--primary); font-size: 18px; font-weight: 900; text-shadow: var(--glow); }
-        .menu-btn { background: none; border: none; color: var(--primary); font-size: 28px; cursor: pointer; transition: 0.3s; }
-        .menu-btn:hover { text-shadow: var(--glow); transform: scale(1.1); }
+        .logo-title { font-family: 'Orbitron'; color: var(--primary); font-size: 18px; font-weight: 900; text-shadow: var(--glow); display: flex; align-items: center; gap: 10px; }
+        
+        /* Stats Grid */
+        .content-area { padding: 20px; overflow-y: auto; flex: 1; }
+        .stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 15px; margin-bottom: 30px; }
+        .stat-card { background: rgba(20, 0, 0, 0.6); border: 1px solid rgba(255,0,0,0.4); padding: 20px; border-radius: 15px; text-align: center; box-shadow: var(--box-shadow); transition: 0.3s; }
+        .stat-card:hover { transform: translateY(-5px); border-color: var(--primary); box-shadow: var(--glow); }
+        .stat-icon { font-size: 30px; color: var(--primary); margin-bottom: 10px; text-shadow: var(--glow); }
+        .stat-num { font-family: 'Orbitron'; font-size: 28px; font-weight: bold; color: white; }
+        .stat-title { font-size: 12px; color: #aaa; letter-spacing: 1px; text-transform: uppercase; }
 
-        /* Sidebar Menu */
-        #sidebar { position: fixed; top: 0; right: -300px; width: 280px; height: 100%; background: rgba(10, 10, 10, 0.95); backdrop-filter: blur(15px); border-left: 1px solid var(--primary); transition: 0.4s ease-in-out; z-index: 2000; display: flex; flex-direction: column; padding: 20px; box-shadow: -5px 0 20px rgba(255,0,0,0.2); }
-        #sidebar.active { right: 0; }
-        .close-menu { align-self: flex-end; font-size: 30px; color: white; cursor: pointer; background: none; border: none; transition: 0.3s; }
-        .close-menu:hover { color: var(--primary); transform: rotate(90deg); }
+        /* Panel Sections */
+        .section-header { font-family: 'Orbitron'; color: var(--primary); margin-bottom: 15px; font-size: 18px; border-bottom: 1px solid rgba(255,0,0,0.3); padding-bottom: 10px; display: flex; justify-content: space-between; align-items: center; }
+        
+        .control-box { background: rgba(0,0,0,0.5); border: 1px solid rgba(255,0,0,0.2); padding: 20px; border-radius: 15px; margin-bottom: 25px; }
+        .flex-row { display: flex; gap: 10px; }
+        
+        /* Custom Tables */
+        .data-table-wrapper { overflow-x: auto; background: rgba(0,0,0,0.4); border-radius: 12px; border: 1px solid rgba(255,0,0,0.2); }
+        table { width: 100%; border-collapse: collapse; min-width: 600px; }
+        th { background: rgba(255,0,0,0.1); color: var(--primary); font-family: 'Orbitron'; padding: 15px; text-align: left; font-size: 14px; letter-spacing: 1px; }
+        td { padding: 15px; border-top: 1px solid rgba(255,0,0,0.1); font-size: 14px; color: #ddd; }
+        tr:hover td { background: rgba(255,0,0,0.05); }
+        
+        .badge { padding: 5px 10px; border-radius: 20px; font-size: 11px; font-weight: bold; font-family: 'Orbitron'; }
+        .badge-active { background: rgba(0, 255, 0, 0.2); color: #0f0; border: 1px solid #0f0; }
+        .badge-banned { background: rgba(255, 0, 0, 0.2); color: #f00; border: 1px solid #f00; }
+        .badge-unused { background: rgba(255, 255, 0, 0.2); color: #ff0; border: 1px solid #ff0; }
 
-        .sidebar-header { text-align: center; margin-bottom: 30px; border-bottom: 1px solid rgba(255,0,0,0.3); padding-bottom: 20px; }
-        .sidebar-logo { width: 70px; height: 70px; border-radius: 50%; object-fit: cover; animation: spinLogo 4s linear infinite; filter: drop-shadow(0 0 10px red); }
-        .sidebar-title { font-family: 'Orbitron'; font-size: 12px; color: #fff; margin-top: 10px; letter-spacing: 1px; }
+        .action-btn { background: none; border: none; font-size: 18px; cursor: pointer; margin-right: 10px; transition: 0.3s; }
+        .btn-del { color: #ff4444; } .btn-del:hover { text-shadow: 0 0 10px red; transform: scale(1.2); }
+        .btn-copy { color: #44aaff; } .btn-copy:hover { text-shadow: 0 0 10px blue; transform: scale(1.2); }
 
-        .menu-item { display: flex; align-items: center; gap: 15px; padding: 15px; color: white; text-decoration: none; font-size: 15px; font-weight: 600; border-radius: 10px; transition: 0.3s; margin-bottom: 10px; cursor: pointer; background: rgba(255,255,255,0.03); }
-        .menu-item i { font-size: 20px; color: var(--primary); width: 25px; text-align: center; }
-        .menu-item:hover { background: rgba(255,0,0,0.1); transform: translateX(5px); border-left: 3px solid var(--primary); }
-        .menu-item.exit { color: #ff4444; margin-top: auto; border: 1px solid rgba(255,0,0,0.3); }
-
-        /* Search Area */
-        .search-container { padding: 20px; background: rgba(0,0,0,0.5); display: flex; flex-direction: column; flex: 1; overflow-y: auto; }
-        .search-box { display: flex; gap: 10px; }
-        #search-result { margin-top: 15px; }
-
-        /* WhatsApp Style Recent Chats Area */
-        .recent-header { font-family: 'Orbitron'; font-size: 14px; color: var(--primary); margin-top: 25px; margin-bottom: 15px; letter-spacing: 1px; font-weight: bold; border-bottom: 1px solid rgba(255,0,0,0.3); padding-bottom: 8px; }
-        #recent-chats-list { display: flex; flex-direction: column; gap: 10px; }
-
-        .rc-card { display: flex; align-items: center; padding: 15px; background: rgba(0,0,0,0.6); border: 1px solid rgba(255,0,0,0.2); border-radius: 12px; cursor: pointer; transition: 0.3s; gap: 15px; }
-        .rc-card:hover { background: rgba(255,0,0,0.1); box-shadow: var(--glow); border-color: var(--primary); transform: translateY(-2px); }
-        .rc-dp { width: 50px; height: 50px; border-radius: 50%; border: 2px solid var(--primary); object-fit: cover; }
-
-        .rc-content { flex: 1; min-width: 0; display: flex; flex-direction: column; justify-content: center; }
-        .rc-top { display: flex; justify-content: space-between; align-items: center; margin-bottom: 5px; }
-        .rc-name { font-family: 'Orbitron'; font-weight: bold; color: white; font-size: 16px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-        .rc-time { font-size: 11px; color: #777; font-family: 'Poppins'; white-space: nowrap; margin-left: 10px; }
-
-        .rc-bottom { display: flex; justify-content: space-between; align-items: center; }
-        .rc-msg { font-size: 13px; color: #aaa; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; padding-right: 10px; }
-        .rc-msg.unread { color: white; font-weight: 600; }
-        .rc-badge { background: var(--primary); color: white; font-size: 11px; font-weight: bold; min-width: 22px; height: 22px; border-radius: 12px; display: flex; justify-content: center; align-items: center; padding: 0 6px; box-shadow: var(--glow); font-family: 'Poppins'; }
-
-        /* Search User Card */
-        .user-card { display: flex; align-items: center; justify-content: space-between; padding: 15px; background: rgba(255,0,0,0.05); border: 1px solid rgba(255,0,0,0.2); border-radius: 12px; cursor: pointer; transition: 0.3s; }
-        .user-card:hover { background: rgba(255,0,0,0.15); box-shadow: var(--glow); transform: translateY(-2px); }
-        .user-card-info { display: flex; align-items: center; gap: 15px; }
-        .user-card-dp { width: 45px; height: 45px; border-radius: 50%; border: 2px solid var(--primary); object-fit: cover; }
-        .user-card-name { font-family: 'Orbitron'; font-weight: bold; color: white; }
-
-        /* Chat Window */
-        #chat-window { position: fixed; inset: 0; background: url('https://www.transparenttextures.com/patterns/carbon-fibre.png'), #050505; z-index: 1000; display: none; flex-direction: column; }
-        .chat-header { height: 70px; background: rgba(0,0,0,0.9); display: flex; align-items: center; padding: 0 20px; border-bottom: 1px solid rgba(255,0,0,0.3); gap: 15px; box-shadow: 0 2px 15px rgba(255,0,0,0.2); }
-        .back-btn { background: none; border: none; color: var(--primary); font-size: 24px; cursor: pointer; transition: 0.3s; }
-        .back-btn:hover { transform: translateX(-5px); text-shadow: var(--glow); }
-
-        #chat-msgs { flex: 1; overflow-y: auto; padding: 20px; display: flex; flex-direction: column; gap: 15px; scroll-behavior: smooth; }
-        .msg { max-width: 75%; padding: 12px 18px; border-radius: 20px; font-size: 14.5px; line-height: 1.4; position: relative; word-wrap: break-word; }
-        .sent { background: linear-gradient(135deg, var(--primary-dark), var(--primary)); align-self: flex-end; color: white; border-bottom-right-radius: 2px; box-shadow: 0 4px 10px rgba(255,0,0,0.3); }
-        .received { background: #1a1a1a; align-self: flex-start; color: white; border: 1px solid #333; border-bottom-left-radius: 2px; box-shadow: 0 4px 10px rgba(0,0,0,0.5); }
-
-        .input-area { padding: 15px 20px; display: flex; gap: 10px; background: rgba(0,0,0,0.9); border-top: 1px solid rgba(255,0,0,0.2); }
-        .input-area input { margin: 0; text-align: left; border-radius: 25px; padding: 15px 20px; }
-        .input-area button { width: 60px; border-radius: 50%; padding: 0; display: flex; justify-content: center; align-items: center; font-size: 20px; }
-
-        /* Profile Modal */
-        #profile-modal { position: fixed; inset: 0; background: rgba(0,0,0,0.8); backdrop-filter: blur(5px); z-index: 3000; display: none; justify-content: center; align-items: center; }
-        .profile-card { background: var(--card); border: 1px solid var(--primary); padding: 30px; border-radius: 20px; width: 90%; max-width: 380px; text-align: center; box-shadow: var(--glow); animation: popUp 0.3s ease-out; position: relative; }
-        @keyframes popUp { from { transform: scale(0.8); opacity: 0; } to { transform: scale(1); opacity: 1; } }
-
-        .close-profile { position: absolute; top: 15px; right: 20px; font-size: 24px; color: white; cursor: pointer; }
-
-        .dp-wrapper { position: relative; display: inline-block; cursor: pointer; margin-bottom: 20px; }
-        .profile-dp { width: 90px; height: 90px; border-radius: 50%; border: 3px solid var(--primary); object-fit: cover; box-shadow: var(--glow); transition: 0.3s; }
-        .dp-wrapper:hover .profile-dp { opacity: 0.7; }
-        .camera-icon { position: absolute; bottom: 0; right: 0; background: var(--primary); border-radius: 50%; padding: 6px; font-size: 14px; color: white; }
-
-        .prof-group { text-align: left; margin-bottom: 15px; }
-        .prof-group label { font-size: 12px; color: #aaa; margin-left: 5px; font-family: 'Orbitron'; }
-        .prof-group input { margin-bottom: 0; padding: 12px; border-radius: 8px; font-family: 'Poppins'; text-align: left; }
-
-        .chat-id-box { display: flex; gap: 10px; }
-        .chat-id-box input { flex: 1; background: #111; color: #777; border-color: #222; cursor: not-allowed; font-family: 'Orbitron'; font-size: 13px; }
-        .chat-id-box button { width: 50px; background: var(--primary); border: none; color: white; border-radius: 8px; cursor: pointer; font-size: 18px; transition: 0.3s; }
-        .chat-id-box button:hover { background: var(--primary-dark); box-shadow: var(--glow); }
-
+        /* Toast Notification */
+        #toast { position: fixed; bottom: 20px; right: 20px; background: var(--primary); color: white; padding: 15px 25px; border-radius: 10px; font-family: 'Orbitron'; box-shadow: var(--glow); display: none; z-index: 10000; animation: popUp 0.3s ease-out; font-weight: bold; }
+        @keyframes popUp { from { transform: translateY(50px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
     </style>
 </head>
 <body>
@@ -146,119 +94,114 @@
     <div id="splash">
         <img src="https://i.ibb.co/k228N76Z/MH-HACKS.png" alt="MH Logo" class="spin-logo">
         <div class="loading-counter" id="loading-counter">0%</div>
-        <h2 class="splash-text">MH SYSTEMS</h2>
+        <h2 class="splash-text">MH ADMIN SYSTEM</h2>
     </div>
 
-    <!-- Key Login -->
+    <!-- Admin Login -->
     <div id="login-screen" class="auth-container" style="display: none;">
         <div class="auth-card">
-            <h2 class="auth-title">ENTER ACCESS KEY</h2>
-            <input type="text" id="access-key" placeholder="XXXX-XXXX-XXXX">
-            <button class="btn-prime" onclick="verifyKey()">AUTHENTICATE <i class="fa-solid fa-bolt"></i></button>
+            <h2 class="auth-title">ADMIN ACCESS</h2>
+            <p style="color:#aaa; font-size:12px; margin-bottom:20px;">Restricted Area. Authorized Personnel Only.</p>
+            <input type="password" id="admin-key" placeholder="Enter Master Admin Key">
+            <button class="btn-prime" onclick="verifyAdmin()"><i class="fa-solid fa-shield-halved"></i> LOGIN TO PANEL</button>
         </div>
     </div>
 
-    <!-- Main Dashboard -->
-    <div id="dashboard">
+    <!-- Admin Dashboard -->
+    <div id="admin-dashboard">
         <div class="top-bar">
-            <div class="logo-title">MH OFFLINE CHAT</div>
-            <button class="menu-btn" onclick="toggleSidebar()"><i class="fa-solid fa-bars"></i></button>
+            <div class="logo-title"><i class="fa-solid fa-crown"></i> MH C-PANEL</div>
+            <button class="btn-prime" style="width: auto; padding: 8px 20px; font-size: 12px;" onclick="logoutAdmin()">
+                <i class="fa-solid fa-power-off"></i> LOGOUT
+            </button>
         </div>
 
-        <div class="search-container">
-            <!-- Search Bar -->
-            <div class="search-box">
-                <input type="text" id="search-id" placeholder="Search Chat ID (MH-0000)" style="margin:0; text-align: left;">
-                <button class="btn-prime" style="width: 60px; border-radius: 12px;" onclick="searchUser()"><i class="fa-solid fa-magnifying-glass"></i></button>
-            </div>
-            <div id="search-result"></div>
-
-            <!-- RECENT CHATS: WhatsApp Style (Permanent History) -->
-            <div class="recent-header" id="recent-header" style="display: none;">RECENT CHATS</div>
-            <div id="recent-chats-list"></div>
-        </div>
-    </div>
-
-    <!-- Sidebar / Hamburger Menu -->
-    <div id="sidebar">
-        <button class="close-menu" onclick="toggleSidebar()"><i class="fa-solid fa-xmark"></i></button>
-
-        <div class="sidebar-header">
-            <img src="https://i.ibb.co/k228N76Z/MH-HACKS.png" alt="Logo" class="sidebar-logo">
-            <div class="sidebar-title">MH OFFLINE HACK</div>
-        </div>
-
-        <div class="menu-item" onclick="openProfile()">
-            <i class="fa-solid fa-user-shield"></i> Profile
-        </div>
-        <a href="https://whatsapp.com/channel/0029VbC12mI1CYoZvPpA4c1j" target="_blank" class="menu-item">
-            <i class="fa-brands fa-whatsapp"></i> WhatsApp Channel
-        </a>
-        <a href="https://t.me/mh_hacks_channel" target="_blank" class="menu-item">
-            <i class="fa-brands fa-telegram"></i> Telegram Channel
-        </a>
-        <a href="https://t.me/mh_hacks_Groups" target="_blank" class="menu-item">
-            <i class="fa-solid fa-users"></i> Telegram Group
-        </a>
-        <a href="mailto:mhhackshelpprevent@gmail.com" class="menu-item">
-            <i class="fa-solid fa-envelope"></i> Help Mail 💌
-        </a>
-
-        <div class="menu-item exit" onclick="logout()">
-            <i class="fa-solid fa-power-off"></i> EXIT
-        </div>
-    </div>
-
-    <!-- Profile Settings Modal -->
-    <div id="profile-modal">
-        <div class="profile-card">
-            <i class="fa-solid fa-xmark close-profile" onclick="closeProfile()"></i>
-
-            <div class="dp-wrapper" onclick="document.getElementById('dp-upload').click()">
-                <img src="https://ui-avatars.com/api/?name=User&background=111&color=fff" class="profile-dp" id="profile-dp-preview" alt="Profile">
-                <i class="fa-solid fa-camera camera-icon"></i>
-            </div>
-            <input type="file" id="dp-upload" accept="image/*" style="display: none;" onchange="previewDP(event)">
-
-            <h3 style="font-family:'Orbitron'; color:var(--primary); margin-bottom:20px;">USER PROFILE</h3>
-
-            <div class="prof-group">
-                <label>Name</label>
-                <input type="text" id="prof-name" placeholder="Enter your name">
-            </div>
-            <div class="prof-group">
-                <label>Gmail</label>
-                <input type="email" id="prof-email" placeholder="Enter your email">
-            </div>
-            <div class="prof-group">
-                <label>Chat ID (Share to chat)</label>
-                <div class="chat-id-box">
-                    <input type="text" id="prof-id" readonly>
-                    <button onclick="copyChatID()"><i class="fa-regular fa-copy"></i></button>
+        <div class="content-area">
+            <!-- Stats -->
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <i class="fa-solid fa-users stat-icon"></i>
+                    <div class="stat-num" id="stat-total-users">0</div>
+                    <div class="stat-title">Total Users</div>
+                </div>
+                <div class="stat-card">
+                    <i class="fa-solid fa-key stat-icon"></i>
+                    <div class="stat-num" id="stat-total-keys">0</div>
+                    <div class="stat-title">Total Keys</div>
+                </div>
+                <div class="stat-card">
+                    <i class="fa-solid fa-wifi stat-icon" style="color: #0f0; text-shadow: 0 0 15px #0f0;"></i>
+                    <div class="stat-num" id="stat-active-users">0</div>
+                    <div class="stat-title">Active Users</div>
                 </div>
             </div>
 
-            <button class="btn-prime" style="margin-top:10px;" onclick="saveProfile()">SAVE UPDATES</button>
+            <!-- Key Generation Box -->
+            <div class="control-box">
+                <div class="section-header">
+                    <span><i class="fa-solid fa-wand-magic-sparkles"></i> GENERATE NEW ACCESS KEY</span>
+                </div>
+                <div class="flex-row">
+                    <input type="text" id="custom-key-input" placeholder="Custom Key (Leave blank for random)" style="margin:0; text-align: left;">
+                    <button class="btn-prime" style="width: 180px;" onclick="generateKey()">GENERATE</button>
+                </div>
+            </div>
+
+            <!-- Access Keys Table -->
+            <div class="control-box">
+                <div class="section-header">
+                    <span><i class="fa-solid fa-key"></i> MANAGE ACCESS KEYS</span>
+                </div>
+                <div class="data-table-wrapper">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>ACCESS KEY</th>
+                                <th>LINKED CHAT ID</th>
+                                <th>STATUS</th>
+                                <th>ACTIONS</th>
+                            </tr>
+                        </thead>
+                        <tbody id="keys-table-body">
+                            <!-- Keys will load here -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Users Database Table -->
+            <div class="control-box">
+                <div class="section-header">
+                    <span><i class="fa-solid fa-address-book"></i> USERS DATABASE</span>
+                </div>
+                <div class="data-table-wrapper">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>DP</th>
+                                <th>CHAT ID</th>
+                                <th>NAME</th>
+                                <th>EMAIL</th>
+                                <th>ACTIONS</th>
+                            </tr>
+                        </thead>
+                        <tbody id="users-table-body">
+                            <!-- Users will load here -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
         </div>
     </div>
 
-    <!-- Chat Window -->
-    <div id="chat-window">
-        <div class="chat-header">
-            <button class="back-btn" onclick="closeChat()"><i class="fa-solid fa-arrow-left"></i></button>
-            <img id="chat-header-dp" src="https://ui-avatars.com/api/?name=User" style="width:40px; height:40px; border-radius:50%; border: 1px solid red; object-fit:cover;">
-            <div id="target-name" style="font-family:'Orbitron'; font-weight:bold; font-size:16px;">User</div>
-        </div>
-        <div id="chat-msgs"></div>
-        <div class="input-area">
-            <input type="text" id="m-input" placeholder="Type a message..." autocomplete="off">
-            <button class="btn-prime" onclick="sendMessage()"><i class="fa-solid fa-paper-plane"></i></button>
-        </div>
-    </div>
+    <!-- Toast -->
+    <div id="toast">Action Successful!</div>
 
     <script type="module">
+        // Same exact Firebase Config as your website
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-        import { getDatabase, ref, set, get, child, onValue, push, update } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js";
+        import { getDatabase, ref, set, get, child, onValue, remove, update } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js";
 
         const firebaseConfig = {
             apiKey: "AIzaSyAp7HD_XEX4Xh9iGMM32f0GyiLNzjZUfUQ",
@@ -273,17 +216,12 @@
         const app = initializeApp(firebaseConfig);
         const db = getDatabase(app);
 
-        let currentUser = null;
-        let activeChatId = null;
-        let uploadedDPBase64 = "";
-        let currentChatListener = null; // Memory leak fix
-        const userCache = {}; // Fast cache load
+        const MASTER_ADMIN_KEY = "MH562100607"; // YOUR REQUESTED ADMIN KEY
 
-        // Splash Animation Logic
+        // Splash Animation Setup
         window.onload = () => {
             let count = 0;
             const counterElem = document.getElementById('loading-counter');
-
             let loaderInterval = setInterval(() => {
                 count += 2;
                 if(count > 100) count = 100;
@@ -293,350 +231,185 @@
                     clearInterval(loaderInterval);
                     setTimeout(() => {
                         document.getElementById('splash').style.display = 'none';
-                        const savedKey = localStorage.getItem('mh_key');
-                        if(savedKey) {
-                            verifyKey(savedKey);
+                        if(sessionStorage.getItem('mh_admin_logged') === 'true') {
+                            loadAdminPanel();
                         } else {
                             document.getElementById('login-screen').style.display = 'flex';
                         }
                     }, 500);
                 }
-            }, 40);
+            }, 30);
         };
 
-        window.verifyKey = async (passedKey) => {
-            const key = passedKey || document.getElementById('access-key').value.trim();
-            if(!key) return;
-
-            const snap = await get(child(ref(db), 'keys/' + key));
-
-            if(snap.exists()) {
-                let keyData = snap.val();
-
-                let validChatID = "";
-                if(typeof keyData === 'object' && keyData.chatID) {
-                    validChatID = keyData.chatID;
-                } else {
-                    validChatID = "MH-" + Math.floor(1000 + Math.random() * 9000);
-                    await update(ref(db, 'keys/' + key), { chatID: validChatID, status: "active" });
-                    await set(ref(db, 'ids/' + validChatID), true);
-                }
-
-                currentUser = {
-                    key: key,
-                    chatID: validChatID,
-                    status: keyData.status || "active"
-                };
-
-                localStorage.setItem('mh_key', key);
-
-                // Fetch User Profile
-                const userProfileSnap = await get(child(ref(db), 'users/' + currentUser.chatID));
-                if(userProfileSnap.exists()){
-                    let data = userProfileSnap.val();
-                    currentUser.name = data.name || "";
-                    currentUser.email = data.email || "";
-                    currentUser.dp = data.dp || `https://ui-avatars.com/api/?name=${currentUser.chatID}&background=111&color=fff`;
-                } else {
-                    currentUser.dp = `https://ui-avatars.com/api/?name=${currentUser.chatID}&background=111&color=fff`;
-                    await set(ref(db, 'users/' + currentUser.chatID), {
-                        name: "",
-                        email: "",
-                        chatID: currentUser.chatID,
-                        dp: currentUser.dp
-                    });
-                }
-
-                document.getElementById('login-screen').style.display = 'none';
-                document.getElementById('dashboard').style.display = 'flex';
-
-                // Initialize WhatsApp-like Recent Chats System
-                loadRecentChats();
-
+        // Admin Auth
+        window.verifyAdmin = () => {
+            const inputKey = document.getElementById('admin-key').value.trim();
+            if(inputKey === MASTER_ADMIN_KEY) {
+                sessionStorage.setItem('mh_admin_logged', 'true');
+                showToast("ACCESS GRANTED!");
+                loadAdminPanel();
             } else {
-                alert("INVALID OR EXPIRED ACCESS KEY!");
-                localStorage.clear();
-                document.getElementById('login-screen').style.display = 'flex';
+                alert("ACCESS DENIED! WRONG MASTER KEY.");
             }
         };
 
-        // UI Controls for Sidebar
-        window.toggleSidebar = () => {
-            document.getElementById('sidebar').classList.toggle('active');
-        };
-
-        window.previewDP = (event) => {
-            const file = event.target.files[0];
-            if(file) {
-                const reader = new FileReader();
-                reader.onload = (e) => {
-                    uploadedDPBase64 = e.target.result;
-                    document.getElementById('profile-dp-preview').src = uploadedDPBase64;
-                };
-                reader.readAsDataURL(file);
-            }
-        };
-
-        window.openProfile = () => {
-            toggleSidebar();
-            document.getElementById('profile-modal').style.display = 'flex';
-            document.getElementById('prof-id').value = currentUser.chatID;
-            document.getElementById('prof-name').value = currentUser.name || "";
-            document.getElementById('prof-email').value = currentUser.email || "";
-            document.getElementById('profile-dp-preview').src = currentUser.dp;
-            uploadedDPBase64 = currentUser.dp;
-        };
-
-        window.closeProfile = () => {
-            document.getElementById('profile-modal').style.display = 'none';
-        };
-
-        window.copyChatID = () => {
-            const idText = document.getElementById('prof-id').value;
-            navigator.clipboard.writeText(idText).then(() => {
-                alert("CHAT ID COPIED: " + idText);
-            });
-        };
-
-        window.saveProfile = async () => {
-            const newName = document.getElementById('prof-name').value;
-            const newEmail = document.getElementById('prof-email').value;
-
-            await update(ref(db, 'users/' + currentUser.chatID), {
-                name: newName,
-                email: newEmail,
-                dp: uploadedDPBase64
-            });
-
-            currentUser.name = newName;
-            currentUser.email = newEmail;
-            currentUser.dp = uploadedDPBase64;
-            alert("Profile Updated Successfully! ✨");
-            closeProfile();
-        };
-
-        // Search System
-        window.searchUser = async () => {
-            const id = document.getElementById('search-id').value.trim().toUpperCase();
-            const resultBox = document.getElementById('search-result');
-            resultBox.innerHTML = "";
-
-            if(!id) return;
-            if(id === currentUser.chatID) {
-                alert("You cannot chat with yourself!");
-                return;
-            }
-
-            const snap = await get(child(ref(db), 'users/' + id));
-            if(snap.exists()){
-                const targetUser = snap.val();
-                const targetName = targetUser.name || id;
-                const targetDp = targetUser.dp || `https://ui-avatars.com/api/?name=${id}&background=111&color=fff`;
-
-                resultBox.innerHTML = `
-                    <div class="user-card" onclick="startChat('${id}', '${targetName}', '${targetDp}')">
-                        <div class="user-card-info">
-                            <img src="${targetDp}" class="user-card-dp">
-                            <div>
-                                <div class="user-card-name">${targetName}</div>
-                                <div style="font-size: 12px; color: #aaa;">Tap to chat</div>
-                            </div>
-                        </div>
-                        <i class="fa-solid fa-comment" style="color:var(--primary); font-size:20px;"></i>
-                    </div>
-                `;
-            } else {
-                resultBox.innerHTML = `<div style="color: red; text-align:center; padding: 10px; font-family:'Orbitron'; font-weight:bold;">USER NOT FOUND!</div>`;
-            }
-        };
-
-        // WHATSAPP STYLE RECENT CHAT SYSTEM (BUG FIXED)
-        async function getUserDetails(id) {
-            if(userCache[id]) return userCache[id];
-            const snap = await get(child(ref(db), 'users/' + id));
-            if(snap.exists()) {
-                userCache[id] = snap.val();
-                return snap.val();
-            }
-            return { name: id, dp: `https://ui-avatars.com/api/?name=${id}&background=111&color=fff` };
-        }
-
-        function loadRecentChats() {
-            const recentRef = ref(db, `recent_chats/${currentUser.chatID}`);
-            onValue(recentRef, async (snapshot) => {
-                const listElem = document.getElementById('recent-chats-list');
-                const headerElem = document.getElementById('recent-header');
-
-                if(!snapshot.exists()) {
-                    headerElem.style.display = "none";
-                    listElem.innerHTML = "";
-                    return;
-                }
-
-                headerElem.style.display = "block";
-
-                let chatsArray = [];
-                snapshot.forEach(child => {
-                    chatsArray.push({ id: child.key, ...child.val() });
-                });
-
-                // Top pe latest message wali chat aayegi (Sort by time descending)
-                chatsArray.sort((a, b) => (b.time || 0) - (a.time || 0));
-
-                let finalHTML = ""; // To prevent async DOM breaking issues
-
-                for(let chat of chatsArray) {
-                    const uData = await getUserDetails(chat.id);
-                    const targetName = uData.name || chat.id;
-                    const targetDp = uData.dp || `https://ui-avatars.com/api/?name=${chat.id}&background=111&color=fff`;
-
-                    // Time Formatting
-                    let timeStr = "";
-                    if(chat.time) {
-                        const date = new Date(chat.time);
-                        timeStr = date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
-                    }
-
-                    // Notification Badge Logic Fixed
-                    let isUnread = (chat.unread && chat.unread > 0);
-                    let badgeHtml = isUnread ? `<div class="rc-badge">${chat.unread}</div>` : ``;
-                    let msgClass = isUnread ? "rc-msg unread" : "rc-msg";
-                    let shortMsg = chat.lastMsg ? chat.lastMsg : "Tap to chat";
-
-                    finalHTML += `
-                        <div class="rc-card" onclick="startChat('${chat.id}', '${targetName}', '${targetDp}')">
-                            <img src="${targetDp}" class="rc-dp">
-                            <div class="rc-content">
-                                <div class="rc-top">
-                                    <div class="rc-name">${targetName}</div>
-                                    <div class="rc-time">${timeStr}</div>
-                                </div>
-                                <div class="rc-bottom">
-                                    <div class="${msgClass}">${shortMsg}</div>
-                                    ${badgeHtml}
-                                </div>
-                            </div>
-                        </div>
-                    `;
-                }
-                
-                // One-time Update to DOM (Race Condition Fixed)
-                listElem.innerHTML = finalHTML;
-            });
-        }
-
-        // Chat System
-        window.startChat = (id, targetName, targetDp) => {
-            activeChatId = id;
-            document.getElementById('dashboard').style.display = 'none';
-            document.getElementById('chat-window').style.display = 'flex';
-
-            document.getElementById('target-name').innerText = targetName;
-            document.getElementById('chat-header-dp').src = targetDp;
-
-            // Chat open karte hi Notification Badge INSTANTLY read (0) ho jayega
-            update(ref(db, `recent_chats/${currentUser.chatID}/${id}`), {
-                unread: 0
-            });
-
-            listenMessages(id);
-        };
-
-        window.closeChat = () => {
-            document.getElementById('chat-window').style.display = 'none';
-            document.getElementById('dashboard').style.display = 'flex';
-            document.getElementById('search-result').innerHTML = "";
-            document.getElementById('search-id').value = "";
-            activeChatId = null;
-            
-            // Stop background listener to save memory and stop glitches
-            if(currentChatListener) {
-                currentChatListener(); 
-                currentChatListener = null;
-            }
-        };
-
-        function listenMessages(targetID) {
-            const chatKey = [currentUser.chatID, targetID].sort().join("_");
-            const chatsRef = ref(db, 'chats/' + chatKey);
-
-            // Detach previous listeners if any (Important Fix)
-            if(currentChatListener) {
-                currentChatListener();
-            }
-
-            currentChatListener = onValue(chatsRef, (snapshot) => {
-                const msgArea = document.getElementById('chat-msgs');
-                msgArea.innerHTML = "";
-                snapshot.forEach(child => {
-                    const m = child.val();
-                    const div = document.createElement('div');
-                    div.className = m.sender === currentUser.chatID ? 'msg sent' : 'msg received';
-                    div.innerText = m.text;
-                    msgArea.appendChild(div);
-                });
-                msgArea.scrollTop = msgArea.scrollHeight;
-
-                // Agar app is chat me hain, aur new message aaya, to automatically read (0)
-                if(activeChatId === targetID) {
-                    update(ref(db, `recent_chats/${currentUser.chatID}/${targetID}`), {
-                        unread: 0
-                    });
-                }
-            });
-        }
-
-        window.sendMessage = async () => {
-            const inputField = document.getElementById('m-input');
-            const text = inputField.value.trim();
-            if(!text) return;
-
-            const chatKey = [currentUser.chatID, activeChatId].sort().join("_");
-            const timestamp = Date.now();
-
-            inputField.value = ""; // Instantly clear input for faster UI feel
-
-            // Main Message Push
-            await push(ref(db, 'chats/' + chatKey), {
-                sender: currentUser.chatID,
-                text: text,
-                time: timestamp
-            });
-
-            // Updating "My Recent Chats" List (Sent message)
-            await update(ref(db, `recent_chats/${currentUser.chatID}/${activeChatId}`), {
-                lastMsg: text,
-                time: timestamp,
-                unread: 0
-            });
-
-            // Updating "Receiver's Recent Chats" List (Adding Notification Count)
-            const receiverRecentRef = ref(db, `recent_chats/${activeChatId}/${currentUser.chatID}`);
-            const snap = await get(receiverRecentRef);
-            
-            let currentUnread = 0;
-            if(snap.exists() && snap.val().unread) {
-                currentUnread = snap.val().unread;
-            }
-            
-            await update(receiverRecentRef, {
-                lastMsg: text,
-                time: timestamp,
-                unread: currentUnread + 1 // Plus Unread Badge Count
-            });
-        };
-
-        document.getElementById('m-input').addEventListener("keypress", function(event) {
-            if (event.key === "Enter") {
-                event.preventDefault();
-                sendMessage();
-            }
-        });
-
-        window.logout = () => {
-            localStorage.clear();
+        window.logoutAdmin = () => {
+            sessionStorage.removeItem('mh_admin_logged');
             location.reload();
         };
+
+        // Load Panel Data
+        function loadAdminPanel() {
+            document.getElementById('login-screen').style.display = 'none';
+            document.getElementById('admin-dashboard').style.display = 'flex';
+
+            fetchRealtimeStats();
+        }
+
+        // Realtime Data Fetching & Sync
+        function fetchRealtimeStats() {
+            // Fetch Keys
+            onValue(ref(db, 'keys'), (snapshot) => {
+                const keysBody = document.getElementById('keys-table-body');
+                keysBody.innerHTML = "";
+                let totalKeys = 0;
+                let activeCount = 0;
+
+                if(snapshot.exists()) {
+                    snapshot.forEach(child => {
+                        totalKeys++;
+                        const keyName = child.key;
+                        const data = child.val();
+                        
+                        // Handle data structure properly
+                        let status = typeof data === 'object' && data.status ? data.status : "unused";
+                        let chatID = typeof data === 'object' && data.chatID ? data.chatID : "Not Assigned";
+                        
+                        if(status === "active") activeCount++;
+
+                        let badgeClass = status === 'active' ? 'badge-active' : (status === 'banned' ? 'badge-banned' : 'badge-unused');
+
+                        keysBody.innerHTML += `
+                            <tr>
+                                <td style="font-family:'Orbitron'; color:white;">${keyName}</td>
+                                <td>${chatID}</td>
+                                <td><span class="badge ${badgeClass}">${status.toUpperCase()}</span></td>
+                                <td>
+                                    <button class="action-btn btn-copy" title="Copy Key" onclick="copyText('${keyName}')"><i class="fa-solid fa-copy"></i></button>
+                                    <button class="action-btn btn-del" title="Delete Key" onclick="deleteKey('${keyName}')"><i class="fa-solid fa-trash"></i></button>
+                                    ${status !== 'banned' ? `<button class="action-btn btn-del" title="Ban Key" onclick="banKey('${keyName}')"><i class="fa-solid fa-ban"></i></button>` : ''}
+                                </td>
+                            </tr>
+                        `;
+                    });
+                } else {
+                    keysBody.innerHTML = `<tr><td colspan="4" style="text-align:center;">No Keys Found</td></tr>`;
+                }
+
+                document.getElementById('stat-total-keys').innerText = totalKeys;
+                document.getElementById('stat-active-users').innerText = activeCount; // Active users based on active keys
+            });
+
+            // Fetch Users
+            onValue(ref(db, 'users'), (snapshot) => {
+                const usersBody = document.getElementById('users-table-body');
+                usersBody.innerHTML = "";
+                let totalUsers = 0;
+
+                if(snapshot.exists()) {
+                    snapshot.forEach(child => {
+                        totalUsers++;
+                        const id = child.key;
+                        const data = child.val();
+                        const dp = data.dp || `https://ui-avatars.com/api/?name=${id}&background=111&color=fff`;
+                        const name = data.name || "Unknown";
+                        const email = data.email || "N/A";
+
+                        usersBody.innerHTML += `
+                            <tr>
+                                <td><img src="${dp}" style="width:40px; height:40px; border-radius:50%; border:1px solid red; object-fit:cover;"></td>
+                                <td style="font-family:'Orbitron'; color:white;">${id}</td>
+                                <td>${name}</td>
+                                <td>${email}</td>
+                                <td>
+                                    <button class="action-btn btn-copy" title="Copy Chat ID" onclick="copyText('${id}')"><i class="fa-solid fa-copy"></i></button>
+                                    <button class="action-btn btn-del" title="Delete User Data" onclick="deleteUser('${id}')"><i class="fa-solid fa-user-xmark"></i></button>
+                                </td>
+                            </tr>
+                        `;
+                    });
+                } else {
+                    usersBody.innerHTML = `<tr><td colspan="5" style="text-align:center;">No Users Found</td></tr>`;
+                }
+
+                document.getElementById('stat-total-users').innerText = totalUsers;
+            });
+        }
+
+        // Key Management Functions
+        window.generateKey = async () => {
+            const customInput = document.getElementById('custom-key-input').value.trim();
+            let newKey = customInput;
+            
+            if(!newKey) {
+                // Generate format: MH-KEY-XXXX-XXXX
+                const chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
+                const r1 = Array.from({length: 4}, () => chars[Math.floor(Math.random() * chars.length)]).join('');
+                const r2 = Array.from({length: 4}, () => chars[Math.floor(Math.random() * chars.length)]).join('');
+                newKey = `MH-KEY-${r1}-${r2}`;
+            }
+
+            // Save to Firebase
+            await set(ref(db, 'keys/' + newKey), {
+                status: "unused",
+                chatID: ""
+            });
+
+            document.getElementById('custom-key-input').value = "";
+            showToast("KEY GENERATED SUCCESSFULLY!");
+        };
+
+        window.deleteKey = async (key) => {
+            if(confirm(`Are you sure you want to DELETE key: ${key}?`)) {
+                await remove(ref(db, 'keys/' + key));
+                showToast("KEY DELETED!");
+            }
+        };
+
+        window.banKey = async (key) => {
+            if(confirm(`Are you sure you want to BAN key: ${key}? User won't be able to login.`)) {
+                await update(ref(db, 'keys/' + key), {
+                    status: "banned"
+                });
+                showToast("KEY BANNED!");
+            }
+        };
+
+        window.deleteUser = async (id) => {
+            if(confirm(`Are you sure you want to DELETE user data for ID: ${id}?\nThis will remove their profile info.`)) {
+                await remove(ref(db, 'users/' + id));
+                // Optional: Remove their chat id record
+                await remove(ref(db, 'ids/' + id));
+                showToast("USER DELETED!");
+            }
+        };
+
+        // Utility Features
+        window.copyText = (text) => {
+            navigator.clipboard.writeText(text).then(() => {
+                showToast("COPIED TO CLIPBOARD!");
+            });
+        };
+
+        function showToast(msg) {
+            const t = document.getElementById('toast');
+            t.innerText = msg;
+            t.style.display = 'block';
+            setTimeout(() => {
+                t.style.display = 'none';
+            }, 3000);
+        }
+
     </script>
 </body>
 </html>
